@@ -88,18 +88,45 @@ function PiedSite({ parametres, setPage }) {
 function Accueil({ setPage, onConnexion, offres }) {
   const stockTotal = offres.reduce((s, o) => s + o.quantiteRestante, 0);
   const produits = new Set(offres.map((o) => o.produit)).size;
+  const [profil, setProfil] = useState("planteur");
+  const parcours = {
+    planteur: {
+      titre: "Vous êtes planteur ou coopérative ?",
+      texte: "Publiez vos récoltes, gardez la main sur vos prix et trouvez des acheteurs vérifiés.",
+      action: "Publier mon premier lot",
+    },
+    acheteur: {
+      titre: "Vous cherchez un approvisionnement fiable ?",
+      texte: "Consultez les lots disponibles, échangez directement avec les producteurs et planifiez la livraison.",
+      action: "Voir les lots disponibles",
+    },
+    transporteur: {
+      titre: "Vous êtes transporteur ?",
+      texte: "Recevez des opportunités de transport adaptées à vos zones et à la capacité de vos véhicules.",
+      action: "Rejoindre le réseau",
+    },
+  };
+  const choix = parcours[profil];
   return (
     <div>
       <section className="heros">
-        <img src="/assets/logo.jpg" alt="Eko Corporate" />
-        <div className="signature">Qualité · Confiance · Performance</div>
-        <h1>Le lien direct entre le planteur<br />et son acheteur</h1>
-        <p>
-          {BP.resume.objet} Notre zone de démarrage : {BP.resume.zone}.
-        </p>
-        <div className="actions">
-          <Bouton onClick={onConnexion}>Créer mon compte</Bouton>
-          <Bouton variante="fantome" onClick={() => setPage("marche")}>Voir les offres du jour</Bouton>
+        <div className="heros-contenu">
+          <div className="heros-texte">
+            <div className="signature">Qualité · Confiance · Performance</div>
+            <h1>Le lien direct entre le planteur et son acheteur</h1>
+            <p>
+              {BP.resume.objet} Notre zone de démarrage : {BP.resume.zone}.
+            </p>
+            <div className="actions">
+              <Bouton onClick={onConnexion}>Créer mon compte</Bouton>
+              <Bouton variante="fantome" onClick={() => setPage("marche")}>Voir les offres du jour</Bouton>
+            </div>
+            <div className="heros-reassurance"><span>✓ Producteurs vérifiés</span><span>✓ Transactions tracées</span></div>
+          </div>
+          <div className="heros-visuel">
+            <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1100&q=85" alt="Culture agricole en Côte d'Ivoire" />
+            <div className="pastille-hero"><strong>Du champ</strong><span>jusqu'au marché</span></div>
+          </div>
         </div>
       </section>
 
@@ -140,6 +167,40 @@ function Accueil({ setPage, onConnexion, offres }) {
             <ul className="liste-verte">{BP.solution.axes.map((x, i) => <li key={i}>{x}</li>)}</ul>
           </div></Reveal>
         </div>
+      </section>
+
+      <section className="section section-parcours">
+        <div className="filet" />
+        <h2>Une plateforme pensée pour vous</h2>
+        <p className="intro">Choisissez votre profil pour découvrir la première étape adaptée à votre besoin.</p>
+        <div className="parcours">
+          <div className="parcours-choix" role="tablist" aria-label="Votre profil">
+            {[["planteur", "🌱", "Je produis"], ["acheteur", "🧺", "Je m'approvisionne"], ["transporteur", "🚚", "Je transporte"]].map(([cle, ico, libelle]) => (
+              <button key={cle} className={profil === cle ? "actif" : ""} onClick={() => setProfil(cle)} role="tab" aria-selected={profil === cle}>
+                <span>{ico}</span>{libelle}
+              </button>
+            ))}
+          </div>
+          <div className="parcours-detail">
+            <div className="parcours-photo" style={{ backgroundImage: `url(${profil === "acheteur" ? "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=900&q=80" : profil === "transporteur" ? "https://images.unsplash.com/photo-1494412651409-8963ce7935a7?auto=format&fit=crop&w=900&q=80" : "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=900&q=80"})` }} />
+            <div>
+              <span className="eyebrow">Votre parcours Eko</span>
+              <h3>{choix.titre}</h3>
+              <p>{choix.texte}</p>
+              <Bouton onClick={() => profil === "acheteur" ? setPage("marche") : onConnexion()}>{choix.action}</Bouton>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="galerie-metiers" aria-label="Eko Corporate sur le terrain">
+        <div className="galerie-texte">
+          <div className="signature">Sur le terrain</div>
+          <h2>Des échanges humains, soutenus par le numérique.</h2>
+          <p>Des récoltes au départ, des produits suivis jusqu'à la réception : chaque étape reste visible pour tous les partenaires.</p>
+        </div>
+        <img src="https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?auto=format&fit=crop&w=1000&q=80" alt="Récolte agricole" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1000&q=80" alt="Logistique et transport" loading="lazy" />
       </section>
 
       <section className="section" style={{ paddingTop: 0 }}>
@@ -526,6 +587,7 @@ function SiteVitrine({ parametres, utilisateur, onConnexion, onTableauDeBord }) 
   const [page, setPage] = useState("accueil");
   const [offres, setOffres] = useState([]);
   const [progression, setProgression] = useState(0);
+  const [afficherRetourHaut, setAfficherRetourHaut] = useState(false);
 
   useEffect(() => {
     Api.get("/offres?statut=disponible").then(setOffres).catch(() => setOffres([]));
@@ -536,6 +598,7 @@ function SiteVitrine({ parametres, utilisateur, onConnexion, onTableauDeBord }) 
       const h = document.documentElement;
       const total = h.scrollHeight - h.clientHeight;
       setProgression(total > 0 ? (h.scrollTop / total) * 100 : 0);
+      setAfficherRetourHaut(h.scrollTop > 500);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -554,6 +617,8 @@ function SiteVitrine({ parametres, utilisateur, onConnexion, onTableauDeBord }) 
       {page === "contrats" && <PageContrats parametres={parametres} />}
       {page === "contact" && <PageContact parametres={parametres} onConnexion={onConnexion} />}
       <PiedSite parametres={parametres} setPage={setPage} />
+      <button className={"retour-haut" + (afficherRetourHaut ? " visible" : "")} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Revenir en haut de page" title="Revenir en haut">↑</button>
     </div>
   );
 }
