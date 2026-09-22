@@ -15,12 +15,6 @@ function PageAuthentification({ onConnecte, onRetour }) {
 
   const maj = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  const remplirDemo = (tel, mdp) => {
-    setMode("connexion");
-    setForm({ ...form, telephone: tel, motDePasse: mdp });
-    setMessage(null);
-  };
-
   const soumettre = async (e) => {
     e.preventDefault();
     setOccupe(true);
@@ -134,13 +128,6 @@ function PageAuthentification({ onConnecte, onRetour }) {
               style={{ background: "none", border: "none", color: "var(--vert)", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", fontSize: 13.5 }}>
               {mode === "connexion" ? "Créer un compte" : "Se connecter"}
             </button>
-          </div>
-
-          <div className="comptes-demo">
-            <div style={{ marginBottom: 6 }}><b>Comptes de démonstration</b></div>
-            <div>Admin — <button onClick={() => remplirDemo("0700000000", "admin123")}>0700000000 / admin123</button></div>
-            <div>Planteur — <button onClick={() => remplirDemo("0701010101", "demo1234")}>0701010101 / demo1234</button></div>
-            <div>Acheteur — <button onClick={() => remplirDemo("0705050505", "demo1234")}>0705050505 / demo1234</button></div>
           </div>
 
           <div style={{ textAlign: "center", marginTop: 18 }}>
